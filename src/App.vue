@@ -154,6 +154,7 @@ body {
   display: flex;
   align-items: center;
   margin-left: auto;
+  text-align: center;
 }
 
 .action-button.secondary {
