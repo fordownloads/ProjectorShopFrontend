@@ -93,7 +93,7 @@ watch(useRoute(), (x, y) => { if(y.path == "/management/products") update(y.quer
             <div>
               <RouterLink :to="{ path: `/products/${product.id}` }"><img src="@/assets/open.svg"></RouterLink>&nbsp;
               <RouterLink :to="{ path: `/products/${product.id}`, query: { edit: true } }"><img src="@/assets/edit.svg"></RouterLink>&nbsp;
-              <a href="#" @click="deleteProduct(product.id);update(page, currentSpecies)"><img src="@/assets/del-black.svg"></a>
+              <a @click="deleteProduct(product.id);update(page, currentSpecies)"><img src="@/assets/del-black.svg"></a>
             </div>
           </td>
         </tr>

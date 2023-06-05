@@ -25,13 +25,13 @@ const update = (offs) => {
     .catch((x) => (error.value = x));
 };
 
-const deleteBrand = () => {
-  fetch(`${CONFIG.apiUrl}/brands/delete/${id.value}`, { method: 'POST' })
+const deleteBrand = (id) => {
+  fetch(`${CONFIG.apiUrl}/brands/delete/${id}`, { method: 'POST' })
     .then((x) => {
       if (x.status === 500)
         alert("Удалите товары перед удалением производителя")
       else
-        router.push('/');
+        update(page)
     })
     .catch((x) => (brandError.value = x));
 };
@@ -86,7 +86,7 @@ watch(useRoute(), (x, y) => { if(y.path == "/management/brands") update(y.query.
             <div>
               <RouterLink :to="{ path: `/brands/${brand.id}` }"><img src="@/assets/open.svg"></RouterLink>&nbsp;
               <RouterLink :to="{ path: `/brands/${brand.id}`, query: { edit: true } }"><img src="@/assets/edit.svg"></RouterLink>&nbsp;
-              <a href="#" @click="deleteBrand(brand.id);update(page)"><img src="@/assets/del-black.svg"></a>
+              <a @click="deleteBrand(brand.id)"><img src="@/assets/del-black.svg"></a>
             </div>
           </td>
         </tr>

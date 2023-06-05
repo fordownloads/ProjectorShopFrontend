@@ -13,7 +13,7 @@ const products = ref(null);
 const brandError = ref(null);
 const productError = ref(null);
 const id = computed(() => useRoute().params.id);
-const show = ref(false);
+const show = ref(useRoute().query.edit ?? false);
 
 const update = () => {
   if (window.Android)
