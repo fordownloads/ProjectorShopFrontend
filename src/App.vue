@@ -49,15 +49,18 @@ onMounted(updateAuthInfo)
           <img src="@/assets/logo.svg" width="36" height="36" />
           <div>
             <h1>{{ CONFIG.appName }}</h1>
-            <span>Магазин продажи проекторов</span>
+            <span>Корма для ваших питомцев</span>
           </div>
         </RouterLink>
-        <div class="links">
+        <div class="links desktop-nav">
           <RouterLink
             v-for="route of routes"
             :to="route.path"
             :class="{ active: currentRoute == route.path, hide: !(route.meta?.admin !== true || (route.meta?.admin && auth.isAdmin)) }"
             :key="route.path">
+            <svg v-if="route.meta?.icon" xmlns="http://www.w3.org/2000/svg" height="28" viewBox="0 96 960 960" width="28">
+              <path :d="route.meta?.icon"></path>
+            </svg>
             {{ route.name }}
           </RouterLink>
           <RouterLink v-if="(auth?.auth !== true)" to="/login"
@@ -88,6 +91,9 @@ onMounted(updateAuthInfo)
       </div>
     </div>
   </div>
+  <footer class="mobile-hide">
+    <span>{{ CONFIG.desktopFooterText }}</span>
+  </footer>
 </template>
 <style>
 body,
@@ -100,13 +106,24 @@ button {
   display: none !important
 }
 
+footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+  padding: 24px;
+}
+footer span {
+  width: 1400px;
+}
+
 body {
   font-size: 15px;
   text-rendering: optimizeLegibility;
   background: var(--dark-0);
   color: #000;
   overflow: overlay;
-  -webkit-tap-highlight-color: #0002
+  -webkit-tap-highlight-color: #0002;
+  margin: 0;
 }
 
 * {
@@ -116,12 +133,13 @@ body {
 :root {
   --accent: #008dd4;
   --accent-trans: #008dd444;
-  --dark-0: #fff;
-  --dark-1: #fff;
-  --dark-1-trans: #ffffffcc;
+  --dark-0: #f7f7f9;
+  --dark-1: #f7f7f9;
+  --dark-1-trans: #f7f7f9cc;
   --dark-2: #fafafa;
-  --dark-3: #f1f1f1;
-  --dark-4: #eee;
+  --dark-3: #fff;
+  --dark-4: #ccc;
+  --shadow: #0001;
   --inset-top: 0px;
   --inset-bottom: 0px;
 }
@@ -138,12 +156,17 @@ body {
   margin-left: auto;
 }
 
+.action-button.secondary {
+  background: #eee;
+  color:#000;
+  border-color: var(--dark-1)
+}
+
 .action-button {
   color: #fff;
   background: #000;
   padding: 8px 16px;
   text-decoration: none;
-  border: 0;
   font-size: 14px;
   cursor: pointer;
   border: 2px solid;
@@ -158,7 +181,7 @@ body {
 .button-block {
   display: flex;
   gap: 8px;
-  margin: 32px 0;
+  margin: 16px 0 32px;
 }
 
 h2 {
@@ -175,27 +198,30 @@ h2 {
 }
 
 .cart-button img {
-  height: 100%;
+  height: 24px;
   width: auto;
 }
 
 .cart-button {
-  border-radius: 8px;
   display: flex;
-  height: 40px;
   justify-content: center;
   align-items: center;
   gap: 8px;
+  flex-grow: 1;
 }
 
 .combo {
   display: flex;
   justify-content: center;
+  gap:4px
 }
 .in-cart {
   border: 2px #000 solid;
   color: #000;
   background: #eee;
+}
+.desktop-hide {
+  display: none;
 }
 
 @media (max-width: 800px) {
@@ -204,6 +230,9 @@ h2 {
   }
   .mobile-hide {
     display: none !important;
+  }
+  .desktop-hide {
+    display: initial !important;
   }
 }
 
@@ -270,23 +299,39 @@ header {
 
 .links {
   display: flex;
-  gap: 8px;
+  gap: 0px;
   flex-shrink: 0;
   flex-grow: 1;
 }
 
 .links a {
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 500;
   text-decoration: none;
-  border-radius: 8px;
-  padding: 16px;
+  border-radius: 80px;
+  padding: 10px 20px;
   color: #000;
 }
 
-.links a.active {
+.desktop-nav a.active {
   background: var(--dark-3);
-  border-bottom: 1px solid var(--dark-4);
+  box-shadow: 0 4px 16px 0 var(--shadow);
+}
+.desktop-nav a svg {
+  width: 24px;
+}
+.desktop-nav a {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.mobile-nav a.active svg {
+  box-shadow: 0 4px 16px 0 var(--shadow);
+    width: 56px;
+    border-radius: 16px;
+    padding: 2px;
+    background: #000;
+    fill: #fff;
 }
 
 header>nav {

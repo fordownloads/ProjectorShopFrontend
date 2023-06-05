@@ -3,6 +3,7 @@ import { inject, ref } from 'vue';
 import { onMounted } from "vue";
 import { CONFIG } from '../config.ts'
 import ProductItem from "../components/ProductItem.vue";
+import Input from "../components/Input.vue";
 
 const orderOpen = ref(false);
 const user = ref(null);
@@ -19,7 +20,7 @@ const getCart = () => {
                 items.value = []
                 return
             }
-            fetch(`${CONFIG.apiUrl}/products?page=1&idList=${x.map(x => x.productId).join()}`)
+            fetch(`${CONFIG.apiUrl}/products?page=1&limit=30&species=null&idList=${x.map(x => x.productId).join()}`)
             .then((y) => y.json())
             .then((y) => { items.value = y })
         })
@@ -59,33 +60,28 @@ onMounted(() => { getCart(); getUser() })
                 <div style="height: 88px"></div>
             </div>
             <div :class="{ order: true, orderOpen }" v-if="user && items?.length > 0" >
-                <h2 @click="orderOpen = true" >Сделать заказ <svg :class="{ hide: orderOpen }" xmlns="http://www.w3.org/2000/svg" height="28" viewBox="0 96 960 960" width="48"><path d="m557 838-67-65 153-152H139v-94h504L489 373l67-64 266 265-265 264Z"></path></svg></h2>
-                <span>Имя</span>
-                <input readonly type="text" v-model="user.firstname" />
-                <span>Фамилия</span>
-                <input readonly type="text" v-model="user.lastname" />
-                <span>Отчество</span>
-                <input readonly type="text" v-model="user.middlename" />
-                <span>Email</span>
-                <input readonly type="text" v-model="user.email" />
-                <span>Адрес</span>
-                <input readonly type="text" v-model="user.address" />
-                <span>Телефон</span>
-                <input readonly type="text" v-model="user.phone" />
-                <RouterLink to="/account">Изменить данные</RouterLink>
+                <h2 @click="orderOpen = true" >Сделать заказ <svg :class="{ hide: orderOpen, 'desktop-hide': true }" xmlns="http://www.w3.org/2000/svg" height="28" viewBox="0 96 960 960" width="48"><path d="m557 838-67-65 153-152H139v-94h504L489 373l67-64 266 265-265 264Z"></path></svg></h2>
+                <Input readonly type="text" placeholder="ФИО" :model-value="`${user.lastname} ${user.firstname} ${user.middlename}`" />
+                <Input readonly type="text" placeholder="Email" v-model="user.email" />
+                <Input readonly type="text" placeholder="Адрес" v-model="user.address" />
+                <Input readonly type="text" placeholder="Телефон" v-model="user.phone" />
                 <button class="action-button" @click="order">Сделать заказ</button>
-                <button :class="{ hide: !orderOpen }" class="action-button" @click="orderOpen = false">Закрыть</button>
+                <RouterLink to="/account" class="action-button secondary">Изменить данные</RouterLink>
+                <button :class="{ hide: !orderOpen }" class="action-button secondary desktop-hide" @click="orderOpen = false">Закрыть</button>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+h2 { display: flex;}
 @media (max-width: 800px) {
 .split>.cart {
     width: 100% !important;
 }
-h2 { display: flex;}
+.split>.order h2 {
+    margin: 10px 0;
+}
 .split>.order {
     width: calc(100% - 64px) !important;
     padding: 0 16px;
@@ -99,7 +95,7 @@ h2 { display: flex;}
     overflow: hidden;
     box-shadow: 0 4px 16px 0 #0002;
     backdrop-filter: blur(10px);
-    transition: all .4s cubic-bezier(0.69, 0.02, 0.14, 1.03)
+    transition: all .4s cubic-bezier(0.69, 0.02, 0.14, 1.03);
 }
 .order.orderOpen {
     padding: 0 32px;
@@ -124,7 +120,12 @@ h2 { display: flex;}
     width: 25%;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
+    margin-bottom: auto;
+  border-radius: 32px;
+  padding: 8px 30px 28px 30px;
+  background: var(--dark-3);
+  box-shadow: 0 4px 16px 0 var(--shadow);
 }
 
 .split {
@@ -138,15 +139,6 @@ h2 { display: flex;}
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-input,
-select {
-    background: var(--dark-2);
-    padding: 8px 12px;
-    border-radius: 6px;
-    border: 1px solid var(--dark-3);
-    color: #000;
 }
 .grid {
   display: grid;

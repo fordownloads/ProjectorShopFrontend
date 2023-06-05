@@ -10,7 +10,7 @@ const auth = inject("auth")
 const inCart = ref(false);
 const product = ref(null);
 const error = ref(null);
-const open = ref(false);
+const show = ref(useRoute().query.edit ?? false);
 const id = computed(() => useRoute().params.id);
 const router = useRouter();
 
@@ -27,7 +27,7 @@ const update = () => {
     .then((x) => x.json())
     .then((x) => {
         product.value = {...x, brandId: x.brand.id};
-        document.title = `${x.model} — ${CONFIG.appName}`;
+        document.title = `${x.name} — ${CONFIG.appName}`;
 
         if (auth.value.auth)
           getCart()
@@ -50,11 +50,6 @@ const deleteProduct = () => {
     .catch((x) => (error.value = x));
 };
 
-const translate = key => ({
-  LampType: "Тип лампы",
-  ProjectionTechnology: "Технология проекции"
-})[key] ?? key
-
 onMounted(update);
 
 const cartAction = (type = 'add') => {
@@ -64,7 +59,7 @@ const cartAction = (type = 'add') => {
         })
 };
 
-watch(open, (n, o) => {
+watch(show, (n, o) => {
   if (window.Android)
     window.Android.changeStatusBarColor(!n)
 })
@@ -76,27 +71,44 @@ watch(open, (n, o) => {
       <div
         class="grid">
         <div class="img">
-          <img loading="lazy" :src="CONFIG.apiUrl + '/products/image/' + product.id + '/0'"  class="product" />
+          <img loading="lazy" :src="CONFIG.apiUrl + '/products/image/' + product.id"  class="product" />
         </div>
         <div class="info">
-          <h2>{{ product.brand.name + ' ' + product.model }}</h2>
+          <h2>{{ product.brand.name + ' ' + product.name }}</h2>
+          <span v-if="product.available" class="price">{{ product.priceKopeck/100 }} ₽</span>
+          <span v-else class="price">
+              Нет в наличии
+          </span>
           <div>
-            <small>Разрешение: </small><span>{{ product.resolution }}</span>
+            <small>Для животного: </small><span>{{ product.species }}</span>
           </div>
           <div>
-            <small>Цвет: </small><span>{{ product.color }}</span>
+            <small>Назначение корма: </small><span>{{ product.spec }}</span>
           </div>
-          <div v-for="(v, k) in product.otherSpecs">
-            <small>{{ translate(k) }}: </small><span>{{ v }}</span>
+          <div>
+            <small>Вес товара: </small><span>{{ product.weightG }} грамм</span>
           </div>
-          <div v-if="inCart" class="combo">
-            <RouterLink :to="`/cart`" class="action-button cart-button in-cart">Перейти в корзину</RouterLink>
+          <div>
+            <small>Вкус: </small><span>{{ product.taste }}</span>
           </div>
-          <button v-else-if="auth?.auth" class="action-button cart-button combo" @click="cartAction()"><img src="@/assets/cart-btn.svg">Добавить в корзину</button>
+          <div>
+            <small>Тип корма: </small><span>{{ product.wet ? "Мокрый" : "Сухой" }}</span>
+          </div>
+          <div>
+            <small>Описание: </small><span>{{ product.description }}</span>
+          </div>
+
+          <template v-if="product.available">
+            <div v-if="inCart" class="combo">
+              <RouterLink :to="`/cart`" class="action-button cart-button secondary in-cart">Перейти в корзину</RouterLink>
+            </div>
+            <button v-else-if="auth?.auth" class="action-button cart-button combo" @click="cartAction()"><img src="@/assets/cart-btn.svg">Добавить в корзину</button>
+            <button v-else class="action-button cart-button combo" @click="router.push('/login')"><img src="@/assets/cart-btn.svg">Добавить в корзину</button>
+          </template>
           <h2>Производитель</h2>
           <brand-item :brand="product.brand" />
           <div class="button-block" v-if="auth?.isAdmin">
-            <button @click="open=true" class="action-button">Редактировать описание</button>
+            <button @click="show=true" class="action-button">Редактировать описание</button>
             <button @click="deleteProduct()" class="action-button">Удалить</button>
           </div>
         </div>
@@ -110,15 +122,20 @@ watch(open, (n, o) => {
     <section v-else class="loading">
       <img src="@/assets/logo-load.svg" width="72" height="72" />
     </section>
-    <ProductEditDialog v-if="product" :open="open" :product="product" @closeModal="open=false;update()" />
+    <ProductEditDialog v-if="product" :show="show" :product="product" @closeModal="show=false;update()" />
   </div>
 </template>
 
 <style scoped>
 section { width: 100%; }
-
+.price {
+  display: flex;
+    padding: 0px 0 16px;
+    font-size: 1.5rem;
+}
 .combo {
   margin: 16px 0 32px;
+  gap:4px
 }
 
 .img {

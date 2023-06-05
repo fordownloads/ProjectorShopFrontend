@@ -2,6 +2,7 @@
 import { inject, ref } from 'vue';
 import { useRouter } from "vue-router";
 import { CONFIG } from '../config.ts'
+import Input from '../components/Input.vue'
 
 let error = ref(null)
 let user = ref({ login: "", password: "" })
@@ -32,8 +33,8 @@ const login = () => {
   <div class="wrap">
     <div class="form">
     <h1>Вход</h1>
-    <input type="text" placeholder="Логин" v-model="user.login" />
-          <input type="password" placeholder="Пароль" v-model="user.password" />
+    <Input type="text" placeholder="Логин" v-model="user.login" />
+          <Input type="password" placeholder="Пароль" v-model="user.password" />
           <span v-if="error">{{ error }}</span>
           <button class="action-button" @click="login">Вход</button>
           <RouterLink to="/register">Нет аккаунта? Зарегистрируйтесь</RouterLink>
@@ -54,13 +55,5 @@ const login = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-input,
-select {
-  background: var(--dark-2);
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid var(--dark-3);
-  color: #000;
 }
 </style>

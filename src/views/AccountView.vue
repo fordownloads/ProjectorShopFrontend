@@ -2,6 +2,7 @@
 import { inject, onMounted, ref, watch } from 'vue';
 import { useRouter } from "vue-router";
 import { CONFIG } from '../config.ts'
+import Input from '../components/Input.vue'
 
 let error = ref(null)
 let user = ref({})
@@ -85,12 +86,12 @@ onMounted(update)
       <h1>Здравствуйте, {{ auth.login }}</h1>
       <button class="action-button" @click="logout">Выход</button>
       <h2>Изменить профиль</h2>
-      <input type="text" placeholder="Имя" v-model="user.firstname" />
-      <input type="text" placeholder="Фамилия" v-model="user.lastname" />
-      <input type="text" placeholder="Отчество" v-model="user.middlename" />
-      <input type="text" placeholder="Email" v-model="user.email" />
-      <input type="text" placeholder="Адрес" v-model="user.address" />
-      <input type="text" placeholder="Телефон" v-model="user.phone" />
+      <Input type="text" placeholder="Имя" v-model="user.firstname" />
+      <Input type="text" placeholder="Фамилия" v-model="user.lastname" />
+      <Input type="text" placeholder="Отчество" v-model="user.middlename" />
+      <Input type="text" placeholder="Email" v-model="user.email" />
+      <Input type="text" placeholder="Адрес" v-model="user.address" />
+      <Input type="text" placeholder="Телефон" v-model="user.phone" />
       <button class="action-button" @click="updateProfile">Изменить профиль</button>
       <!--h2>Изменить пароль</h2>
           <input type="text" placeholder="Пароль" v-model="password" />
@@ -123,15 +124,6 @@ onMounted(update)
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-input,
-select {
-  background: var(--dark-2);
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid var(--dark-3);
-  color: #000;
 }
 
 .mobile-footer {

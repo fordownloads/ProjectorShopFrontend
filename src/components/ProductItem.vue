@@ -2,6 +2,7 @@
 import { RouterLink } from "vue-router";
 import { defineProps, defineEmits } from "vue";
 import { CONFIG } from "../config.ts";
+import { speciesFix } from "../utils.ts";
 
 const props = defineProps(["product", "inCart", "showGotoCart", "login"]);
 const emit = defineEmits(["update"])
@@ -18,17 +19,16 @@ const cartAction = (type = 'add') => {
   <div class="item">
     <RouterLink :to="`/products/${product.id}`">
       <div class="img">
-        <img loading="lazy" :src="CONFIG.apiUrl + '/products/image/' + product.id + '/0'" />
+        <img loading="lazy" :src="CONFIG.apiUrl + '/products/image/' + product.id" />
       </div>
-      <h3 :class="{ standalone: false }">{{ (product.brand?.name ?? "") + " " + product.model }}</h3>
-    </RouterLink>
-    <RouterLink :to="`/brands/${product.brand.id}`" v-if="product.brand">
+      <h3 :class="{ standalone: false }">{{ (product.brand?.name ?? "") + " " + product.name }}</h3>
+      <span class="price">{{ product.priceKopeck / 100 }} ₽</span>
       <span class="brand">
-        {{ product.resolution }}, {{ product.color }}
+        {{ speciesFix(product.species) }}, {{ product.wet ? "Мокрый" : "Сухой" }}, {{ product.weightG / 1000 }} кг.
       </span>
     </RouterLink>
     <div v-if="inCart" class="combo">
-      <RouterLink :to="`/cart`" v-if="showGotoCart" class="action-button cart-button in-cart">Перейти в корзину</RouterLink>
+      <RouterLink :to="`/cart`" v-if="showGotoCart" class="action-button cart-button secondary in-cart">Перейти в корзину</RouterLink>
       <button class="action-button cart-button" @click="e => cartAction('remove')"><img src="@/assets/del.svg"></button>
     </div>
     <button v-else-if="login" class="action-button cart-button combo" @click="e => cartAction()"><img src="@/assets/cart-btn.svg">Добавить в корзину</button>
@@ -39,16 +39,20 @@ const cartAction = (type = 'add') => {
 
 .combo {
   margin: 0 16px 16px;
+  gap:4px
+}
+.price {
+  margin: 6px 18px;
+    font-size: 1.25rem;
 }
 .item {
   display: flex;
   flex-direction: column;
-  border-radius: 16px;
+  border-radius: 32px;
   background: #ffffff;
   padding: 0;
-  gap: 16px;
   color: rgb(0, 0, 0);
-  box-shadow: 0 3px 8px rgb(240,240,240);
+  box-shadow: 0 4px 16px 0 var(--shadow);
   text-decoration: none;
   overflow: hidden;
 }
@@ -65,12 +69,8 @@ h3 {
 a {
   color: #000;
   text-decoration: none;
-}
-
-small {
-  font-weight: 400;
-  color: #666;
-  padding: 8px;
+  display: flex;
+  flex-direction: column;
 }
 
 .img {

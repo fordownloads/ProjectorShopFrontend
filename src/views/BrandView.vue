@@ -13,7 +13,7 @@ const products = ref(null);
 const brandError = ref(null);
 const productError = ref(null);
 const id = computed(() => useRoute().params.id);
-const open = ref(false);
+const show = ref(false);
 
 const update = () => {
   if (window.Android)
@@ -48,7 +48,7 @@ const deleteBrand = () => {
 };
 
 
-watch(open, (n, o) => {
+watch(show, (n, o) => {
   if (window.Android)
     window.Android.changeStatusBarColor(!n)
 })
@@ -67,7 +67,7 @@ onMounted(update);
             <span>{{ brand.description }}</span>
           </div>
           <div class="button-block" v-if="auth?.isAdmin">
-            <button @click="open=true" class="action-button">Редактировать описание</button>
+            <button @click="show=true" class="action-button">Редактировать описание</button>
             <button @click="deleteBrand()" class="action-button">Удалить</button>
           </div>
         </div>
@@ -91,7 +91,7 @@ onMounted(update);
     <section v-else class="loading">
       <img src="@/assets/logo-load.svg" width="72" height="72" />
     </section>
-    <BrandEditDialog v-if="auth?.isAdmin && brand" :open="open" :brand="brand" @closeModal="open=false;update()" />
+    <BrandEditDialog v-if="auth?.isAdmin && brand" :show="show" :brand="brand" @closeModal="show=false;update()" />
   </div>
 </template>
 

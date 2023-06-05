@@ -1,8 +1,9 @@
 <script setup>
 import { CONFIG } from "../config.ts";
-import { onMounted, ref, defineProps, defineEmits } from "vue";
+import Input from "./Input.vue";
+import { watch, ref, defineProps, defineEmits } from "vue";
 
-const props = defineProps(["product", "open"]);
+const props = defineProps(["product", "show"]);
 const emit = defineEmits(["closeModal"]);
 
 const error = ref(null);
@@ -18,7 +19,7 @@ const uploadImg = () => {
     filesCache = fileInput.value.files[0]
     const formData = new FormData();
     formData.append('uploadedFile', fileInput.value.files[0]);
-    fetch(`${CONFIG.apiUrl}/products/EditPhoto/${props.product.id}/0`, {method: "POST", body: formData})
+    fetch(`${CONFIG.apiUrl}/products/EditPhoto/${props.product.id}`, {method: "POST", body: formData})
     .then((x) => {
       if (x.status === 200)
         emit('closeModal')
@@ -41,12 +42,13 @@ const getBrands = () => {
 };
 
 const update = () => {
+  console.log(JSON.stringify(props.product))
   error.value = null;
   fetch(`${CONFIG.apiUrl}/products/edit`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...props.product, otherSpecs: null }),
+      body: JSON.stringify(props.product),
     }
   )
     .then((x) => {
@@ -58,29 +60,33 @@ const update = () => {
     .catch((x) => (error.value = x));
 };
 
-onMounted(getBrands);
+watch(props, (x, y) => { if (y.show) getBrands() });
 </script>
 
 <template>
   <Teleport to="body">
     <Transition>
-      <div class="backdrop" v-if="open" @click.self="$emit('closeModal')" />
+      <div class="backdrop" v-if="show" @click.self="$emit('closeModal')" />
     </Transition>
     <div class="modalWrap">
       <Transition>
-        <div class="modal" v-if="open">
+        <div class="modal" v-if="show">
           <h1>Изменить товар</h1>
           <span v-if="error">{{ error }}</span>
-          <h2>Описание</h2>
-          <input type="text" placeholder="Название" v-model="product.model" />
-          <input type="text" placeholder="Разрешение" v-model="product.resolution" />
-          <input type="text" placeholder="Цвет" v-model="product.color" />
-          <select v-model="product.brandId">
-            <option disabled selected value="">Выберите производителя</option>
-            <option v-for="brand in brands" :key="brand" :value="brand.id">
-              {{ brand.name }}
-            </option>
-          </select>
+          <Input type="text" placeholder="Название" v-model="product.name" />
+          <Input type="text" placeholder="Цена (в коп.)" v-model="product.priceKopeck" />
+          <Input type="checkbox" placeholder="В наличии" v-model="product.available" />
+          <Input type="text" placeholder="Вес (г.)" v-model="product.weightG" />
+          <Input type="checkbox" placeholder="Мокрый корм" v-model="product.wet" />
+          <Input type="text" placeholder="Назначение корма" v-model="product.spec" />
+          <Input type="text" placeholder="Вкус" v-model="product.taste" />
+          <Input type="textarea" placeholder="Описание" v-model="product.description"></Input>
+          <Input type="select" placeholder="Выберите животное" v-model="product.species">
+            <option v-for="s in CONFIG.animalList" :key="s" :value="s">{{ s }}</option>
+          </Input>
+          <Input type="select" placeholder="Выберите производителя" v-model="product.brandId">
+            <option v-for="brand in brands" :key="brand.id" :value="brand.id">{{ brand.name }}</option>
+          </Input>
           <button class="action-button" @click="update">Изменить</button>
           <h2 class="mobile-hide">Фото</h2>
           <input class="mobile-hide" type="file" ref="fileInput" />
@@ -95,6 +101,7 @@ onMounted(getBrands);
 @media (max-width: 800px) {
   .modal {
     margin: 16px !important;
+    overflow: scroll;
   }
 }
 .modalWrap {
@@ -105,14 +112,16 @@ onMounted(getBrands);
   height: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: baseline;
+  padding: 16px;
   z-index: 12;
   perspective: 1000px;
+  overflow-y: auto;
 }
 
 .modal {
   background: var(--dark-1);
-  width: 400px;
+  width: 600px;
   display: flex;
   gap: 8px;
   flex-direction: column;
@@ -138,21 +147,8 @@ onMounted(getBrands);
   pointer-events: none;
 }
 
-input,
-select {
-  background: var(--dark-2);
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid var(--dark-3);
-  color: #000;
-}
 button {
-  border-radius: 6px;
   margin-top: 16px;
-}
-
-::placeholder {
-  color: #aaa;
 }
 
 h1 {
