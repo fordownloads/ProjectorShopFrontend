@@ -154,7 +154,6 @@ body {
   display: flex;
   align-items: center;
   margin-left: auto;
-  text-align: center;
 }
 
 .action-button.secondary {
@@ -173,6 +172,7 @@ body {
   border: 2px solid;
   transition: .2s ease;
   border-radius: 24px;
+  text-align: center;
 }
 
 .action-button:hover {
