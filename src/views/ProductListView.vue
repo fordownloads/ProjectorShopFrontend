@@ -20,9 +20,7 @@ const speciesList = [
 const page = computed(() => useRoute().query.page ?? 1);
 
 const update = (offs, species) => {
-  //const saveScroll = document.documentElement.scrollTop
   showFilters.value = false
-  //products.value = null;
   error.value = null;
   currentSpecies.value = species ?? "null";
   fetch(`${CONFIG.apiUrl}/products?page=${offs}&limit=30&species=${species}&idList=null`)
@@ -37,8 +35,6 @@ const update = (offs, species) => {
             .then(c => {
               const guids = c.map(y => y.productId)
               products.value = x.map(p => ({ ...p, inCart: guids.indexOf(p.id) >= 0 }));
-              
-              //setTimeout(() => document.documentElement.scrollTop = saveScroll, 10)
             })
         else
           products.value = x;

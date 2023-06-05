@@ -87,8 +87,10 @@ const update = () => {
   height: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: baseline;
+  padding: 16px;
   z-index: 11;
+  overflow-y: auto;
 }
 
 .modal {
