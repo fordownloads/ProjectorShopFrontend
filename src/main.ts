@@ -74,7 +74,7 @@ const router = createRouter({
         },
         {
             path: "/management/brands",
-            name: "Производители",
+            name: "Прoизводители",
             meta: { admin: true, hide: true, back: true },
             component: () => import("./views/BrandTableView.vue"),
         },
