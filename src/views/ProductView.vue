@@ -5,6 +5,7 @@ import { onMounted, ref, inject, watch } from "vue";
 import { computed } from "vue";
 import BrandItem from "../components/BrandItem.vue";
 import ProductEditDialog from "../components/ProductEditDialog.vue";
+import SpecsList from "../components/SpecsList.vue";
 
 const auth = inject("auth")
 const inCart = ref(false);
@@ -79,24 +80,13 @@ watch(show, (n, o) => {
           <span v-else class="price">
               Нет в наличии
           </span>
-          <div>
-            <small>Для животного: </small><span>{{ product.species }}</span>
-          </div>
-          <div>
-            <small>Назначение корма: </small><span>{{ product.spec }}</span>
-          </div>
-          <div>
-            <small>Вес товара: </small><span>{{ product.weightG }} грамм</span>
-          </div>
-          <div>
-            <small>Вкус: </small><span>{{ product.taste }}</span>
-          </div>
-          <div>
-            <small>Тип корма: </small><span>{{ product.wet ? "Мокрый" : "Сухой" }}</span>
-          </div>
-          <div>
-            <small>Описание: </small><span>{{ product.description }}</span>
-          </div>
+
+          <SpecsList title="Для животного">{{ product.species }}</SpecsList>
+          <SpecsList title="Назначение корма">{{ product.spec }}</SpecsList>
+          <SpecsList title="Вес товара">{{ product.weightG }} грамм</SpecsList>
+          <SpecsList title="Вкус">{{ product.taste }}</SpecsList>
+          <SpecsList title="Тип корма">{{ product.wet ? "Мокрый" : "Сухой" }}</SpecsList>
+          <SpecsList title="Описание">{{ product.description }}</SpecsList>
 
           <template v-if="product.available">
             <div v-if="inCart" class="combo">
@@ -165,14 +155,6 @@ section { width: 100%; }
   backdrop-filter: blur(8px);
   width: 500px;
   margin-bottom: -4px;
-}
-
-small {
-  opacity: 0.75;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  padding-right: 8px;
-  line-height: 2;
 }
 
 h2:first-child {

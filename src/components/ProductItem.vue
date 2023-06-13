@@ -57,6 +57,10 @@ const cartAction = (type = 'add') => {
   overflow: hidden;
 }
 
+.item .action-button.secondary {
+  border-color: #ffffff
+}
+
 h3 {
   margin: 16px 18px 0;
   font-weight: 600;

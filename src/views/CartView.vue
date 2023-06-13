@@ -20,7 +20,7 @@ const getCart = () => {
                 items.value = []
                 return
             }
-            fetch(`${CONFIG.apiUrl}/products?page=1&limit=30&species=null&idList=${x.map(x => x.productId).join()}`)
+            fetch(`${CONFIG.apiUrl}/products?page=1&limit=1000&species=null&idList=${x.map(x => x.productId).join()}`)
             .then((y) => y.json())
             .then((y) => { items.value = y })
         })
@@ -37,9 +37,30 @@ const getUser = () => {
 };
 
 const order = () => {
-    alert('Заказ принят')
-  fetch(`${CONFIG.apiUrl}/cart/clear`, {method:'post'})
-    .then((x) => getCart())
+  fetch(`${CONFIG.apiUrl}/order/add`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        firstname: user.value.firstname,
+        lastname: user.value.lastname,
+        middlename: user.value.middlename,
+        address: user.value.address,
+        phone: user.value.phone,
+        email: user.value.email,
+        products: items.value.map(x => x.id)
+      }),
+    }
+  )
+  .then((x) => {
+      if (x.status === 200)
+        fetch(`${CONFIG.apiUrl}/cart/clear`, {method:'post'})
+            .then((x) => {getCart();alert('Заказ принят')})
+      else
+        error.value = x.statusText
+    })
+    .catch((x) => (error.value = x));
+
 };
 
 onMounted(() => { getCart(); getUser() })
@@ -59,14 +80,20 @@ onMounted(() => { getCart(); getUser() })
                 <span v-else><RouterLink to="/login">Войдите</RouterLink>, чтобы добавлять товары в корзину</span>
                 <div style="height: 88px"></div>
             </div>
-            <div :class="{ order: true, orderOpen }" v-if="user && items?.length > 0" >
+            <div :class="{ order: true, orderOpen }" v-if="items?.length > 0 && user && user.email && user.address && user.phone && user.lastname && user.firstname && user.middlename" >
                 <h2 @click="orderOpen = true" >Сделать заказ <svg :class="{ hide: orderOpen, 'desktop-hide': true }" xmlns="http://www.w3.org/2000/svg" height="28" viewBox="0 96 960 960" width="48"><path d="m557 838-67-65 153-152H139v-94h504L489 373l67-64 266 265-265 264Z"></path></svg></h2>
                 <Input readonly type="text" placeholder="ФИО" :model-value="`${user.lastname} ${user.firstname} ${user.middlename}`" />
                 <Input readonly type="text" placeholder="Email" v-model="user.email" />
                 <Input readonly type="text" placeholder="Адрес" v-model="user.address" />
-                <Input readonly type="text" placeholder="Телефон" v-model="user.phone" />
+                <Input readonly type="text" placeholder="Телефон" v-model="user.phone" /><br>
                 <button class="action-button" @click="order">Сделать заказ</button>
                 <RouterLink to="/account" class="action-button secondary">Изменить данные</RouterLink>
+                <button :class="{ hide: !orderOpen }" class="action-button secondary desktop-hide" @click="orderOpen = false">Закрыть</button>
+            </div>
+            <div :class="{ order: true, orderOpen }" v-else-if="user && items?.length > 0">
+                <h2 @click="orderOpen = true" >Заполните профиль</h2>
+                <span>Чтобы совершать покупки, вы должны заполнить свой профиль</span><br>
+                <RouterLink to="/account" class="action-button">Перейти к заполнению</RouterLink>
                 <button :class="{ hide: !orderOpen }" class="action-button secondary desktop-hide" @click="orderOpen = false">Закрыть</button>
             </div>
         </div>
@@ -144,6 +171,10 @@ h2 { display: flex;}
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
+}
+
+.order .action-button.secondary {
+  border-color: #ffffff
 }
 
 </style>

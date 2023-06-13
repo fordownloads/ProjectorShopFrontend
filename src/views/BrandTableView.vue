@@ -42,9 +42,6 @@ watch(useRoute(), (x, y) => { if(y.path == "/management/brands") update(y.query.
 
 <template>
   <div class="split">
-    <section v-if="brands?.length == 0">
-      <h1>Здесь пусто</h1>
-    </section>
     <section v-if="brands">
       <ManagementTabs />
       <div class="button-block">

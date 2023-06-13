@@ -2,6 +2,7 @@
 import { RouterLink } from "vue-router";
 import { defineProps } from "vue";
 import { CONFIG } from "../config.ts";
+import SpecsList from "../components/SpecsList.vue";
 defineProps(["brand", "justText"]);
 </script>
 
@@ -10,21 +11,11 @@ defineProps(["brand", "justText"]);
     <img loading="lazy" :src="CONFIG.apiUrl + '/brands/image/' + brand.id" />
     <div>
       <h3>{{ brand.name }}</h3>
-      <div v-if="brand.year">
-        <small>Год основания: </small> <span>{{ brand.year }}</span>
-      </div>
-      <div v-if="brand.phone">
-        <small>Телефон: </small> <span>{{ brand.phone }}</span>
-      </div>
-      <div v-if="brand.email">
-        <small>Email: </small> <span>{{ brand.email }}</span>
-      </div>
-      <div v-if="brand.website">
-        <small>Сайт: </small> <span>{{ brand.website }}</span>
-      </div>
-      <div v-if="brand.country">
-        <small>Страна: </small> <span>{{ brand.country }}</span>
-      </div>
+      <SpecsList v-if="brand.year" title="Год основания">{{ brand.year }}</SpecsList>
+      <SpecsList v-if="brand.phone" title="Телефон">{{ brand.phone }}</SpecsList>
+      <SpecsList v-if="brand.email" title="Email">{{ brand.email }}</SpecsList>
+      <SpecsList v-if="brand.website" title="Сайт">{{ brand.website }}</SpecsList>
+      <SpecsList v-if="brand.country" title="Страна">{{ brand.country }}</SpecsList>
     </div>
   </RouterLink>
 </template>
@@ -55,13 +46,6 @@ a:not(.justText) {
   justify-content: center;
 }
 img {  width: 96px;  height: 32px; }
-small {
-  opacity: 0.75;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  padding-right: 8px;
-  line-height: 2;
-}
 h3 {
   margin-top: 0;
   margin-bottom: 12px;
